@@ -15,7 +15,12 @@ class B2Adapter extends AbstractAdapter
     /**
      * @var string
      */
-    protected $bucket;
+    protected $bucket_id;
+
+    /**
+     * @var string
+     */
+    protected $bucket_name;
 
     /**
      * @var string
@@ -38,8 +43,9 @@ class B2Adapter extends AbstractAdapter
     public function __construct(Client $client, $bucket, $prefix = '', array $options = [])
     {
         $this->b2client = $client;
-        $this->bucket = $bucket;
-        $this->prefix = $prefix;
+        $this->bucket_id = $client->getBucketIdFromName($bucket);
+        $this->bucket_name = $bucket;
+        $this->setPathPrefix($prefix);
         $this->options = $options;
     }
 
@@ -48,9 +54,19 @@ class B2Adapter extends AbstractAdapter
      *
      * @return    string
      */
-    public function getBucket()
+    public function getBucketName()
     {
-        return $this->bucket;
+        return $this->bucket_name;
+    }
+
+    /**
+     * Returns bucket id
+     *
+     * @return    string
+     */
+    public function getBucketId()
+    {
+        return $this->bucket_id;
     }
 
     /**
@@ -64,21 +80,76 @@ class B2Adapter extends AbstractAdapter
      */
     public function write($path, $contents, Config $config)
     {
-        // to be implement
+        return $this->upload($path, $contents, $config);
     }
 
     /**
-     * Update file
+     * Delete file version from bucket
      *
-     * @param     string $path
-     * @param     string $contents
-     * @param     Config $config Config object
-     *
-     * @return    false|array false on failure file meta data on success
+     * @param
+     * @return    void
+     * @author
+     * @copyright
      */
-    public function update($path, $contents, Config $config)
+    public function delete($path)
     {
-        // to be implement
+        $command = $this->b2client->deleteFile([
+            'BucketName' => getBucketName(),
+            'Filename' => $this->setPathPrefix($path)
+        ]);
+
+        return ! $this->has($path);
+    }
+
+    /**
+     * Delete directory from bucket
+     *
+     * @param
+     * @return    void
+     * @author
+     * @copyright
+     */
+    public function deleteDir($path)
+    {
+
+        $this->b2client->deleteFile([
+            'BucketName' => getBucketName(),
+            'Filename' => $this->setPathPrefix($path) . '/'
+        ]);
+
+        return ! $this->has($path);
+    }
+
+    /**
+     * Create directory in bucket (file representation)
+     *
+     * @param
+     * @return    void
+     * @author
+     * @copyright
+     */
+    public function createDir($dirname, Config $config)
+    {
+
+        return $this->upload($dirname . '/', '', $config);
+
+    }
+
+    /**
+     * Check file exists or not
+     *
+     * @param
+     * @return    void
+     * @author
+     * @copyright
+     */
+    public function has($path)
+    {
+        if ($this->b2client->getFile($path)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -90,10 +161,32 @@ class B2Adapter extends AbstractAdapter
      */
     protected function upload($path, $body, Config $config)
     {
-        $this->b2client->upload([
-            'BucketName' => $this->bucket,
+
+        $command = $this->b2client->upload([
+            'BucketName' => getBucketName(),
             'Filename' => $path,
             'Body' => $body
         ]);
+
+        return $command;
+
     }
+
+    /**
+     * Description of what this does.
+     *
+     * @param
+     * @return    void
+     * @author
+     * @copyright
+     */
+
+    protected function setPathPrefix($prefix)
+    {
+        $prefix = ltrim($prefix, '/');
+
+        return parent::setPathPrefix($prefix);
+    }
+
+
 }
