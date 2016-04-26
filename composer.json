@@ -18,6 +18,6 @@
         }
     ],
     "autoload": {
-        "psr-4": {"H2akim\\FlysystemB22\\": "src/"}
+        "psr-4": {"H2akim\\Flysystem\\": "src/"}
     }
 }
