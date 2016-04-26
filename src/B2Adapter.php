@@ -86,7 +86,6 @@ class B2Adapter extends AbstractAdapter
      * Read a file
      *
      * @param     string $path
-     *
      * @return    false|array false on failure file meta data on success
      */
     public function read($path)
@@ -97,7 +96,6 @@ class B2Adapter extends AbstractAdapter
         ]);
 
         return $response;
-
     }
 
     /**
@@ -116,15 +114,15 @@ class B2Adapter extends AbstractAdapter
         return ! $this->has($path);
     }
 
-
-
     /**
      * list contents
      *
+     * @param     string $directory
+     * @param     bool $recursive
+     * @return    array
      */
     public function listContents($directory = '', $recursive = false)
     {
-
         $listing = [];
 
         $responses = $this->b2client->listFiles([
@@ -153,10 +151,9 @@ class B2Adapter extends AbstractAdapter
     /**
      * Normalize object result array
      *
-     * @param
-     * @return    void
-     * @author
-     * @copyright
+     * @param     array $response
+     * @param     string $path
+     * @return    array
      */
     protected function normalizeResponse(array $response, $path = null)
     {
@@ -175,7 +172,6 @@ class B2Adapter extends AbstractAdapter
      */
     public function deleteDir($path)
     {
-
         if ($this->has($path)) {
 
             $this->b2client->deleteFile([
@@ -201,14 +197,18 @@ class B2Adapter extends AbstractAdapter
     }
 
     /**
-     * write Stream
+     * Write new file (stream)
      *
+     * @param     string $path
+     * @param     string $contents
+     * @param     Config $config Config object
+     *
+     * @return    false|array false on failure file meta data on success
      */
     public function writeStream($path, $contents, Config $config)
     {
         return $this->write($path, $contents, $config);
     }
-
 
     /**
      * Check file exists or not
@@ -218,7 +218,6 @@ class B2Adapter extends AbstractAdapter
      */
     public function has($path)
     {
-
         $settings = [
             'BucketName' => $this->getBucketName(),
             'FileName' => $path
@@ -246,7 +245,6 @@ class B2Adapter extends AbstractAdapter
      */
     protected function upload($path, $body, Config $config)
     {
-
         $command = $this->b2client->upload([
             'BucketName' => $this->getBucketName(),
             'FileName' => $path,
@@ -254,16 +252,13 @@ class B2Adapter extends AbstractAdapter
         ]);
 
         return $command;
-
     }
 
     /**
      * Description of what this does.
      *
      * @param     string $prefix
-     * @return
-     * @author
-     * @copyright
+     * @return    string
      */
 
     public function setPathPrefix($prefix)
@@ -273,7 +268,7 @@ class B2Adapter extends AbstractAdapter
         return parent::setPathPrefix($prefix);
     }
 
-    /* These method not yet implemented */
+    /* These methods not yet implemented */
 
     /**
      * update Stream
