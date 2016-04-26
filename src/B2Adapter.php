@@ -13,14 +13,14 @@ class B2Adapter extends AbstractAdapter
 {
 
     /**
-         * @var array
-         */
-        protected static $resultMap = [
-            'size' => 'size',
-            'path' => 'name',
-            'type' => 'type',
-            'id' => 'id'
-        ];
+     * @var array
+     */
+    protected static $resultMap = [
+        'size' => 'size',
+        'path' => 'name',
+        'type' => 'type',
+        'id' => 'id'
+    ];
 
     /**
      * @var Client
@@ -147,8 +147,6 @@ class B2Adapter extends AbstractAdapter
             }
         }
 
-        print_r($listing);
-
         return $listing;
     }
 
@@ -163,9 +161,7 @@ class B2Adapter extends AbstractAdapter
     protected function normalizeResponse(array $response, $path = null)
     {
         $result = ['path' => $response['name']];
-
         $result = array_merge($result, Util::map($response, static::$resultMap));
-
         return $result;
     }
 
@@ -201,9 +197,7 @@ class B2Adapter extends AbstractAdapter
      */
     public function createDir($dirname, Config $config)
     {
-
         return $this->upload($dirname . '/', '', $config);
-
     }
 
     /**
