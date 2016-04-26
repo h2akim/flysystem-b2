@@ -162,8 +162,6 @@ class B2Adapter extends AbstractAdapter
         return $result;
     }
 
-
-
     /**
      * Delete directory from bucket
      *
